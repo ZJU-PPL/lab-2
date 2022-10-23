@@ -1,4 +1,5 @@
 (library
+ (public_name lab2)
  (name lab2) 
  (modules lexer parser cmd syntax
     fresh info
