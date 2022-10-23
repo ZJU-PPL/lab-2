@@ -1,6 +1,6 @@
 (lang dune 3.3)
 
-(name lab1)
+(name lab2)
 
 (generate_opam_files true)
 
