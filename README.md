@@ -1,5 +1,5 @@
 # PPL Lab2
-Note : Currently, only simplified Chinese version(of course, with some academic words in English). 
+Note : Currently, only simplified Chinese version(of course, with some academic words in English) is available.
 
 ## 实验要求
 请在实验前阅读本文件, 以免错过重要信息.
