@@ -86,17 +86,27 @@ let rec pp_tm fmt (tm:Cmd.OptionTyped.tm) =
       -> fprintf fmt "%a" pp_tm tm2
     )
   end in
+  let aux_app tm1 tm2 = begin
+    ( match tm1 with
+    | Lam(_, _, _) 
+    | Add(_, _) | Sub(_, _)
+    | Lt(_, _) | Eq(_, _)
+        ->  fprintf fmt "(%a)@ " pp_tm tm1
+    | _ -> fprintf fmt "%a@ " pp_tm tm1
+    );
+    ( match tm2 with
+    | App(_, _) | Lam(_, _, _)
+    | Add(_, _) | Sub(_, _)
+    | Lt(_, _)  | Eq(_, _)
+        -> fprintf fmt "(%a)" pp_tm tm2
+    | _ -> fprintf fmt "%a" pp_tm tm2
+    )
+  end in
   match tm with
   | Var(name) -> fprintf fmt "%s" name
   | Lam(bind, Some(ty), body) -> fprintf fmt "\\ %s : %a . %a" bind pp_ty ty pp_tm body
   | Lam(bind, None, body) -> fprintf fmt "\\ %s . %a" bind pp_tm body
-  | App((Lam(_, _, _) as tm1), (App(_, _) as tm2)) 
-  | App((Lam(_, _, _) as tm1), (Lam(_, _, _) as tm2)) 
-    -> fprintf fmt "@[(%a)@]@ (%a)" pp_tm tm1 pp_tm tm2
-  | App((Lam(_, _, _) as tm1), tm2) -> fprintf fmt "@[(%a)@]@ %a" pp_tm tm1 pp_tm tm2
-  | App(tm1, (App(_, _) as tm2)) | App(tm1, (Lam(_, _, _) as tm2)) 
-    -> fprintf fmt "%a@ (%a)" pp_tm tm1 pp_tm tm2
-  | App(tm1, tm2) -> fprintf fmt "%a@ %a" pp_tm tm1 pp_tm tm2
+  | App(tm1, tm2) -> aux_app tm1 tm2
   | Int(n) -> fprintf fmt "%d" n
   | Bool(true) -> fprintf fmt "true"
   | Bool(false) -> fprintf fmt "false"
@@ -107,7 +117,7 @@ let rec pp_tm fmt (tm:Cmd.OptionTyped.tm) =
   | If(tm1, tm2, tm3) -> fprintf fmt "if@ %a@ then@ %a@ else@ %a@ end" pp_tm tm1 pp_tm tm2 pp_tm tm3
   | Fix(bind, Some(ty), body) -> fprintf fmt "fix %s : %a = %a" bind pp_ty ty pp_tm body
   | Fix(bind, None, body) -> fprintf fmt "fix %s = %a" bind pp_tm body
-  ;;
+;;
 
 let ty = pp_to_str pp_ty;;
 let tm = pp_to_str pp_tm;;

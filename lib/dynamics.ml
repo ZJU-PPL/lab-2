@@ -89,7 +89,7 @@ let src_seq_fail : string list =
   [ {| (\ f. f true)((\ x. if x then \y. y+1+1 else \y.y end)
     ((\ x. if x then false else true end)(3+1<2))) |}
   ]
-let src_seq_reason : string = "Todo"
+let src_seq_reason : string = {| Todo |}
 
 (*
   接下来就是小步求值语义 t --> t', 这也是本文件最重要的内容(28 分).
