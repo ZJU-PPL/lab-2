@@ -13,22 +13,25 @@ open Base
 
 module Named = struct
   (*
-    类似于 lab-1, 我们在此定义了抽象语法树, 添加了若干分支
-    这些分支主要是为了添加两种基本数据类型: 整数和布尔值
+    类似于 lab-1, 我们在此定义了抽象语法树, 添加了若干运算符(operator)
+    这些运算符主要是为了添加两种基本数据类型: 整数和布尔值
     以及如何使用这些数据类型进行运算, 加法(+)、减法(-)、条件判断(if)等.
    *)
   type tm = (* tm 是 term 的简写 *)
     | Var of string
     | Lam of string * tm
     | App of tm * tm
+
     | Int of int
-    | Bool of bool
     | Add of tm * tm
     | Sub of tm * tm
     | Lt of tm * tm        (* 比较整数 tm1 < tm2 *)
     | Eq of tm * tm        (* 判断 **整数** 是否相等 tm1 = tm2 *)
+
+    | Bool of bool
     | If of tm * tm * tm   (* if tm1 then tm2 else tm3 *)
-    | Fix of string * tm   (* fix f : T = tm *)
+
+    | Fix of string * tm   (* fix f = tm *)
 end
 (*
   为使后续实验进行顺利, 你有必要对上述抽象语法树足够熟悉.
@@ -38,18 +41,18 @@ end
 
 (*
   1. 提供了编译器前端, 将字符串转换为抽象语法树, 例如:
-  "\\ f. f 3 + 2" 表示的是 Lam("f", App(Var("f"), Add(Int(3), Int(2))))
-  在 utop 环境里, 尝试 ` OptionTyped.erase @@ Parse.tm "\\ f. f 3 + 2";; `
+  "\\ f. f (3 + 2)" 表示的是 Lam("f", App(Var("f"), Add(Int(3), Int(2))))
+  在 utop 环境里, 尝试 ` OptionTyped.erase @@ Parse.tm "\\ f. f (3 + 2)";; `
   便可得到对应的 Named.tm (目前无需理解 OptionTyped.erase 的作用)
   你也可以尝试下列帮助函数
-  ` Parse.tm_nd "\\ f. f 3 + 2";; ` 其中 nd 是 nAMEd    的简写
-  ` Parse.tm_nl "\\ f. f 3 + 2";; ` 其中 nl 是 nAMElESS 的简写
+  ` Parse.tm_nd "\\ f. f (3 + 2)";; ` 其中 nd 是 n AME d     的简写
+  ` Parse.tm_nl "\\ f. f (3 + 2)";; ` 其中 nl 是 n AME l ESS 的简写
   
   ( 注: 编译器前端的实现, 你将会在下学期编译原理的课程上学到, 这超出本课范围. 不过无需担心,
     热心的助教为你实现了 `lexer.mll` 与 `parser.mly`, 而且你不必了解细节, 可以忽略. 
     出于简单的考量, 实验中不会出现负整数, 请你也尽量不要写负整数, 否则会导致错误 )
 *)
-let example_src_1 : string = "\\ f. f 3 + 2";;
+let example_src_1 : string = "\\ f. f (3 + 2)";;
 let example_ast_1 : Named.tm = Named.(
   Lam("f", App(Var("f"), Add(Int(3), Int(2)))));;
 
@@ -66,7 +69,7 @@ let example_ast_1 : Named.tm = Named.(
   ` Stringify.tm_nd Named.(
     Lam("bool", If(Var("bool"), Bool(false), Bool(true))));;
   ` 
-  而 `Stringify.tm_nl` 是 nAMEless 版本的.
+  而 `Stringify.tm_nl` 是 n AME l ESS 版本的.
 
   ( 注: pretty printer 的实现位于 `syntax.ml`, 你也可以忽略此文件. )
 *)
@@ -74,6 +77,17 @@ let example_ast_2 : Named.tm = Named.(
   Lam("bool", If(Var("bool"), Bool(false), Bool(true))));;
 let example_src_2 : string = "\\ bool . if bool then false else true end";;
 
+(* 
+  不知你注意到没有, "\\ bool. if bool then false else true end" 中使用了双斜线 "\\"
+  这是因为在字符串中, '\'用来转义, "\\" 才表示字符'\' 本身.
+  我们可以使用 {| |} 要求不进行转义, 即写成如下形式也是对的:
+  {| \ bool. if bool then false else true end |}
+  你可以在 utop 里尝试:
+  `
+  Parse.tm_nd {| \ bool. if bool then false else true end |};;
+  `
+ *)
+ 
 (* 为使你尽快熟练使用这两组帮助函数, 请完成下列任务: *)
 
 (* 表达式, 请保证绑定变量的命名一致 (2 分)
@@ -81,11 +95,11 @@ let example_src_2 : string = "\\ bool . if bool then false else true end";;
   App(Lam("x", If( Lt(Var("x"), Int(0)), Sub(Int(0), Var("x")), Var("x")))
   , If(Bool(true), Bool(false), Bool(true)))
   *)
-let tm_ast_src : string = "Todo";;
+let tm_ast_src : string = {| Todo |};;
 
 (* Z 组合子, 请保证绑定变量的命名一致 (2 分)
   根据下列字符串, 写出对应的抽象语法树:
-  "\\ f. (\\ x. f(\\ y. x x y)) (\\ x. f(\\ y. x x y))"
+  {| \ f. (\ x. f(\ y. x x y)) (\ x. f(\ y. x x y)) |}
  *)
 let tm_src_ast : Named.tm = Named.Var "Todo";;
 
@@ -115,7 +129,13 @@ module Nameless = struct
     | Lt of tm * tm      (* 比较整数 tm1 < tm2 *)
     | Eq of tm * tm      (* 判断 **整数** 是否相等 tm1 = tm2 *)
     | If of tm * tm * tm (* if tm1 then tm2 else tm3    *)
-    | Fix of string * tm (* fix f = tm *)
+    | Fix of string * tm (* fix bind = tm *)
+  (* 
+    仔细的你或许发现了, 即便是 Nameless 的 tm, Fix 也有 string 而不是 var,
+    下面的 nameless representation 中, fix bind = body
+    body 中的 bind 是 Var(Free bind), 而不是 Var(Bound n)
+    这也是为什么你需要实现 subst_free 与 subst_bound 的 | Fix（bind, body) 部分 
+   *)
 
   (* subst_free b x a = [b/x]a *)
   let subst_free (b:tm) (x:string) (a:tm) : tm =

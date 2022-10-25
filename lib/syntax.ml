@@ -50,34 +50,38 @@ let rec pp_tm fmt (tm:Cmd.OptionTyped.tm) =
   let open Cmd.OptionTyped in
   let aux_add_sub (sym:string) tm1 tm2 = begin
     ( match tm1 with
-    | App(_, _) | Lam(_, _, _) | Lt(_, _) | Eq(_, _) | If(_, _, _) | Fix(_, _, _)
+    | Lt(_, _) | Eq(_, _)  | Lam(_, _, _) | If(_, _, _) | Fix(_, _, _)
       -> fprintf fmt "(%a)" pp_tm tm1
     | Add(_, _) | Sub(_, _) 
+    | App(_, _)
     | Var(_) | Int(_) | Bool(_)
       -> fprintf fmt "%a" pp_tm tm1
     ); 
       fprintf fmt "@ %s@ " sym;
     ( match tm2 with
-    | App(_, _) | Lam(_, _, _) | Lt(_, _) | Eq(_, _) | If(_, _, _) | Fix(_, _, _)
+    | Lt(_, _) | Eq(_, _) | Lam(_, _, _) | If(_, _, _) | Fix(_, _, _)
     | Add(_, _) | Sub(_, _) 
       -> fprintf fmt "(%a)" pp_tm tm2
+    | App(_, _) 
     | Var(_) | Int(_) | Bool(_) 
       -> fprintf fmt "%a" pp_tm tm2
     )
   end in
   let aux_lt_eq (sym:string) tm1 tm2 = begin
     ( match tm1 with
-    | App(_, _) | Lam(_, _, _) | If(_, _, _) | Fix(_, _, _)
+    | Lam(_, _, _) | If(_, _, _) | Fix(_, _, _)
       -> fprintf fmt "(%a)" pp_tm tm1
     | Eq(_, _) | Lt(_, _) 
+    | App(_, _) 
     | Var(_) | Int(_) | Bool(_) | Add(_, _) | Sub(_, _) 
       -> fprintf fmt "%a" pp_tm tm1
     ); 
       fprintf fmt "@ %s@ " sym;
     ( match tm2 with
-    | App(_, _) | Lam(_, _, _) | If(_, _, _) | Fix(_, _, _)
+    | Lam(_, _, _) | If(_, _, _) | Fix(_, _, _)
     | Eq(_, _) | Lt(_, _) 
       -> fprintf fmt "(%a)" pp_tm tm2
+    | App(_, _) 
     | Var(_) | Int(_) | Bool(_) | Add(_, _) | Sub(_, _) 
       -> fprintf fmt "%a" pp_tm tm2
     )

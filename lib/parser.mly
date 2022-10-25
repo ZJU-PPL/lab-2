@@ -1,5 +1,4 @@
 %{
-open Base.List;;
 open Cmd;;
 module Type = Type;;
 module Term = OptionTyped;;
@@ -59,34 +58,36 @@ cmd :
   | TOK_CHECK TOK_IDENT { Check($2, None)}
   | TOK_CHECK TOK_IDENT ty { Check($2, Some($3)) }
   ;
-tm : 
-  | tm_app { 
-    let ls = rev $1 in
-    match ls with
-    | [] -> failwith "Impossible"
-    | tm::[] -> tm
-    | func::args -> fold args ~init:func 
-      ~f:(fun func arg->Term.App(func, arg))
-  }
+
+tm : tm_0 { $1 }
   ;
 
-tm_not_app :
-  | TOK_L_PAREN tm TOK_R_PAREN { $2 }
+tm_0 : 
+  | tm_0 TOK_LT tm_0 { Term.Lt($1, $3) }
+  | tm_0 TOK_EQ tm_0 { Term.Eq($1, $3) }
+  | tm_1 { $1 }
+  ;
+
+tm_1 : 
+  | tm_1 TOK_ADD tm_1 { Term.Add($1, $3) }
+  | tm_1 TOK_SUB tm_1 { Term.Sub($1, $3) }
+  | tm_2 { $1 }
+  ;
+
+tm_2 :
+  | tm_2 tm_3 { Term.App($1, $2) }
+  | tm_3 { $1 }
+  ;
+
+tm_3 :
+  | TOK_L_PAREN tm_0 TOK_R_PAREN { $2 }
   | TOK_IDENT { Term.Var($1) }
-  | TOK_LAMBDA TOK_IDENT ty_opt TOK_DOT tm { Term.Lam($2, $3, $5) }
-  | TOK_FIX TOK_IDENT ty_opt TOK_EQ tm { Term.Fix($2, $3, $5) }
+  | TOK_LAMBDA TOK_IDENT ty_opt TOK_DOT tm_0 { Term.Lam($2, $3, $5) }
+  | TOK_FIX TOK_IDENT ty_opt TOK_EQ tm_0 { Term.Fix($2, $3, $5) }
   | TOK_INT_LIT  { Term.Int($1) }
   | TOK_BOOL_LIT { Term.Bool($1) }
-  | tm_not_app TOK_ADD tm_not_app { Term.Add($1, $3) }
-  | tm_not_app TOK_SUB tm_not_app { Term.Sub($1, $3) }
-  | tm_not_app TOK_EQ tm_not_app { Term.Eq($1, $3) }
-  | tm_not_app TOK_LT tm_not_app { Term.Lt($1, $3) }
-  | TOK_IF tm TOK_THEN tm TOK_ELSE tm TOK_END { Term.If($2, $4, $6) }
+  | TOK_IF tm_0 TOK_THEN tm_0 TOK_ELSE tm_0 TOK_END { Term.If($2, $4, $6) }
   ;
-
-tm_app : 
-  | tm_not_app { $1::[] }
-  | tm_app tm_not_app  { $2::$1 }
 
 ty_opt :
   | TOK_COLON ty { Some($2) }

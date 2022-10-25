@@ -9,7 +9,10 @@ type ty = (* ty 是 type 的简写 *)
   | Lam of ty * ty (* 函数类型 ty1->ty2 *)
   ;;
 
-(* 类型的相等判断 *)
+(* 类型的相等判断 
+   在其他文件中使用时, 可以写成 ` Type.(ty1=ty2) `
+   其中 Type 指的是本文件 `type.ml` .
+ *)
 let rec (=) ty1 ty2 : bool = 
   match ty1, ty2 with
   | Bool, Bool | Int, Int -> true
@@ -36,7 +39,7 @@ let ty_ast_src : ty = Bool;; (* Todo *)
 
 (*
   还记得在 `term.ml` 里出现过的 OptionTyped.erase 和 OptionTyped.inject 吗?
-  这是因为, 类型检查需要添加信息, 而助教实现的编译器前端与pretty printer 兼容两种语法,
+  这是因为, 类型检查需要添加信息, 而我们实现的编译器前端与pretty printer 兼容两种语法,
   即有类型标注与无类型标注的两种语法. 下面 Typed 模块定义了有类型标注的 term.
 
   lab-2 要求进行类型检查时, 函数的参数必须有类型标注, 即形如:
@@ -59,16 +62,18 @@ let ty_ast_src : ty = Bool;; (* Todo *)
   与下列的定义
  *)
 module Typed = struct
+  
   type tm = (* named term *)
-    | Var of string
+    | Var of string (* 注:  这里定义的 tm 是 named, 
+                            因为类型检查时使用有名表示更方便一些 *)
     | Lam of string * ty * tm 
     | App of tm * tm
     | Int of int
-    | Bool of bool
     | Add of tm * tm
     | Sub of tm * tm
     | Lt of tm * tm        (* 比较整数 tm1 < tm2 *)
     | Eq of tm * tm        (* 判断 **整数** 是否相等 tm1 = tm2 *)
+    | Bool of bool
     | If of tm * tm * tm   (* if tm1 then tm2 else tm3 *)
     | Fix of string * ty * tm (* fix f : T = tm *)
 end

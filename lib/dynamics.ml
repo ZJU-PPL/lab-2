@@ -30,6 +30,7 @@ open Term.Nameless;;
   Bool(b) val
 
  *)
+(* 使用 value 作为名字, 是因为 val 是 OCaml 保留的关键字. *)
 let value : tm -> bool = fun (t:tm) -> match t with
   | Lam(_) | Int(_) | Bool(_) -> true
   | _ -> false
@@ -42,15 +43,15 @@ let value : tm -> bool = fun (t:tm) -> match t with
   -->   2   + (5 + 2)
   -->   2   +    7
   -->       9
-  上述例子说明了表达式 "4 - 2 + (5 + 2)" 的求值过程
+  上述例子说明了表达式 {| 4 - 2 + (5 + 2) |} 的求值过程
   并且上述转换序列是小步的, 没有进行跳过任何一个步骤. 
   下面使用 string list 表示了这一转换过程经过的步骤.
  *)
 let example_src_seq : string list =
-  [ "4 - 2 + (5 + 2)"
-  ; "  2   + (5 + 2)"
-  ; "  2   +    7   "
-  ; "      9        "
+  [ {| 4 - 2 + (5 + 2) |}
+  ; {|   2   + (5 + 2) |}
+  ; {|   2   +    7    |}
+  ; {|       9         |}
   ];;
 (*
   接下来, 请你模仿练习, 补充完整下列两个转换序列(各 3 分):
@@ -58,10 +59,10 @@ let example_src_seq : string list =
   即便你未能通过此处两个练习的测试, 也请继续往下完成小步求值语义.
  *)
 let src_seq_1 : string list =
-  [ "if 2 + 3 < 5 then 0+1+2 else 8-2 end" 
+  [ {| if 2 + 3 < 5 then 0+1+2 else 8-2 end |}
   ];;
 let src_seq_2 : string list = 
-  [ "(\\ f. f (5 - 3))(\\ x. if x < 0 then 0 - x else x + 2 end) "
+  [ {| (\ f. f (5 - 3))(\ x. if x < 0 then 0 - x else x + 2 end) |}
   ];;
 
 (* 
@@ -69,21 +70,24 @@ let src_seq_2 : string list =
   例如表达式 if 3 + 5 - 1 then f 3 else g 1 end 有下列转换序列:
  *)
 let example_src_seq_fail : string list = 
-  [ "(if 3 + 5 - 1 then f 3 else g 1 end) + 6"
-  ; "(if   8   - 1 then f 3 else g 1 end) + 6"
-  ; "(if     7     then f 3 else g 1 end) + 6"
+  [ {| (if 3 + 5 - 1 then f 3 else g 1 end) + 6 |}
+  ; {| (if   8   - 1 then f 3 else g 1 end) + 6 |}
+  ; {| (if     7     then f 3 else g 1 end) + 6 |}
   ]
 let example_src_seq_reason : string = 
-  " if     7     then f 3 else g 1 end "
+  {| if     7     then f 3 else g 1 end |}
 (*
   错误的原因是, 7 是一个 Int 而不是一个 Bool , 因此不能作为 if 的条件判断.
-  "if     7     then f 3 else g 1 end" 无法继续小步转换.
+  {| if     7     then f 3 else g 1 end |} 无法继续小步转换.
+  在 C 语言中, 7 会被隐式转换成 true, 但本实验设计的语言没有这样的设计, 
+  这是因为隐式转换往往会带来不易察觉的动态语义问题.
+
   下面请你模仿上述例子, 补充完整转换序列, 并写出导致不能再进行小步转换的项(4 分):
  *)
 
 let src_seq_fail : string list = 
-  [ "(\\ f. f true)((\\ x. if x then \\y. y+1+1 else \\y.y end)
-    ((\\ x. if x then false else true end)(3+1<2))) "
+  [ {| (\ f. f true)((\ x. if x then \y. y+1+1 else \y.y end)
+    ((\ x. if x then false else true end)(3+1<2))) |}
   ]
 let src_seq_reason : string = "Todo"
 
@@ -109,12 +113,13 @@ let rec step (tm:tm) : (status * tm) = match tm with
     (* 
       下面是 App 的动态语义规则及其对应的实现,
       值得一提的是, 这种 App 的运算顺序与 lab-1 中的 normalization 不同
-      如下运算顺序被称为 applicative order, 而 lab-1 中的称为 normal order
+      如下运算顺序被称为 applicative order, 或说 eager evaluation
+      而 lab-1 中的称为 normal order, 某种程度上是 lazy evaluation
           t1    --> t1'
       ------------------------ App-1
           t1 t2 --> t1' t2
 
-      t1 val  t2 -->    t2'
+      t1 val t2 -->    t2'
       ------------------------ App-2
           t1 t2 --> t1 t2'
 
@@ -144,7 +149,7 @@ let rec step (tm:tm) : (status * tm) = match tm with
       ---------------------- Add-1
             t1+t2 --> t1'+t2
 
-      t1 val  t2 -->    t2'
+      t1 val   t2 -->    t2'
       ---------------------- Add-2
             t1+t2 --> t1+t2'
 
@@ -174,16 +179,16 @@ let rec step (tm:tm) : (status * tm) = match tm with
   | If(t1, t2, t3) -> (
     (*
       最后是 If 的规则, 这与之前的规则有较大差别, 请按照规则完成:
-        t1  --> t1'
+         t1 --> t1'
       -------------------------------- If-1
       if t1 then t2 else t3 end
         --> if t1' then t2 else t3 end
 
-      t1 val t1=Bool(true)
+         t1 val t1=Bool(true)
       -------------------------------- If-2
       if t1 then t2 else t3 end --> t2
 
-      t1 val t1=Bool(false)
+         t1 val t1=Bool(false)
       -------------------------------- If-3
       if t1 then t2 else t3 end --> t3
      *)
@@ -199,6 +204,13 @@ let rec step (tm:tm) : (status * tm) = match tm with
      *)
     raise Todo.Fixpoint
 ;;
+
+(*
+  你可以在 `$ dune utop` 里试着使用 step, 例如:
+  `
+  let (stat, res) = {| (\x.3) (4+5) |} |> Parse.tm_nl |> Dynamics.step ;;
+  `
+ *)
 
 (*
   消灭 Todo.Dynmaics 之后, 让我们把目光转移到动态语义出错上来.

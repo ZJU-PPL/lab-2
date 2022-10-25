@@ -116,6 +116,13 @@ let rec check (ctx:ctx) (tm:tm) : ty option =
 
       -------------- Ty-Var
        Γ, x:T ⊢ x:T
+
+       上述记法来自教材第 4 章, 写成下述形式或许有利于你实现:
+
+        x : T ∈ Γ
+      -------------- Ty-Var      
+        Γ ⊢ x : T
+
      *)
     raise Todo.Statics
   | Term.Lam(x, ty1, tm) -> (

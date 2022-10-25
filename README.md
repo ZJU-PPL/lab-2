@@ -18,7 +18,7 @@ Note : Currently, only simplified Chinese version(of course, with some academic 
 - `todo.ml`
     所有的 Todo 异常 以及 fix 拓展部分的实验指导.
 - `test.ml` `test.stlc` 
-    可用于自我测试.
+    可用于自我测试, 请阅读 `test.ml` 内的注释, 按需修改`test.stlc`, 并运行 `$ dune test`.
 - `fresh.ml` `lexer.mll` `parser.mly` `syntax.ml` `cmd.ml` 
     这是助教为你提供的帮助函数库, 你**不需要**关心这一部分的代码实现.
     若有需要, 你只阅读函数名, 并借助 `$ dune utop` 来查看对应函数的类型.

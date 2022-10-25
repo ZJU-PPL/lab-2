@@ -3,6 +3,7 @@ open Base;;
 open Stdio;;
 
 let file_name = "test.stlc";; (* 测试指令所在的文件, 请按测试需求修改文件内容 *)
+
 (* 
   lab-2 **不**要求你实现指令相关的部分, 这只是为了方便你进行测试.
 
@@ -11,28 +12,30 @@ let file_name = "test.stlc";; (* 测试指令所在的文件, 请按测试需求
   STLC 麻雀虽小, 却五脏俱全, 相比 lambda calculus 更接近实际使用的编程语言了.
 
   下面是各个指令的详细介绍, 下列简单的例子给一个直观感受:
-  ( 注: 你可以复制粘贴到测试文件中, 运行 ` dune test ` 以测试你的实现 )
+  ( 注: 你可以复制粘贴例子到测试文件中, 运行 ` dune test ` 以测试你的实现 )
   `
-  let n = 3 + 4
+  let n = (\x. x) (3 + 4)
   eval n
   check n Int
   `
+  注意: 在文本文件 `test.stlc` 中, 你不需要进行转义, 因此写 '\' 而非 "\\".
  *)
+ 
 (* 指令 let
   指令 let symbol = term 
 
   let 指令能给 term 给予一个符号(symbol), 以减少多次书写相同的项.
   例如 lab-1 中我们曾定义的求和函数 sum, 在不使用 Y 组合子时可以如下定义:
   `
-  let sum_aux = \\ aux. \\ n. 
+  let sum_aux = \ aux. \ n. 
     if n = 0 then n else n + (aux aux (n-1)) end
   let sum = sum_aux sum_aux
   `
-  其中 sum_aux sum_aux 中的 sum_aux 指的是 \\ sum. \\ n.  ... 的部分
+  其中 sum_aux sum_aux 中的 sum_aux 指的是 \ sum. \ n.  ... 的部分
 
   这里的 let 指令只是提供了方式去重复使用 sum_aux, 
   但是 let 不能出现自指, 即下列 let 指令会抛出错误:
-  ` let sum = \\ n. if n = 0 then n else n + (sum (n-1)) end `
+  ` let sum = \ n. if n = 0 then n else n + (sum (n-1)) end `
   因为在定义 `if n = 0 then n else n + (sum (n-1)) end` 这一 term 时
   `sum` 仍然是一个自由变量, 在 lab-2 中, 我们要求 term 是 closed.
  *)

@@ -13,15 +13,15 @@ exception Fixpoint;;
 (*  
   注意, STLC 动态语义是完全擦除类型后进行的(回忆 OptionTyped.erase ),
   这意味着, 我们可以像 lab-1 那样写出 Y 组合子以及递归函数.
-  然而, 有一些事情发生了变化, lab-2 的动态语义是 applicative order,
-  而不是 normal order (参见 `dynamics.ml` 中函数 step 的 App 分支).
+  然而, 有一些事情发生了变化, lab-2 的动态语义是 applicative order(或说 eager),
+  而不是 normal order (即某种 lazy) (参见 `dynamics.ml` 中函数 step 的 App 分支).
   因此我们不能使用 Y 组合子, 而只能改用类似的 Z 组合子.
   你应该在 `term.ml` 的练习中接触过 Z 组合子, 现在不妨进行对比:
  *)
-let y_src : string = "\\ f. (\\ x. f(      x x  )) (\\ x. f(      x x  ))";;
-let z_src : string = "\\ f. (\\ x. f(\\ y. x x y)) (\\ x. f(\\ y. x x y))";;
+let y_src : string = {| \ f. (\ x. f(      x x  )) (\ x. f(      x x  )) |};;
+let z_src : string = {| \ f. (\ x. f(\ y.  x x y)) (\ x. f(\ y.  x x y)) |};;
 (* 
-  还记得课上曾讲过的例子 "(\\u.\\v. v)((\\x. x x)(\\x. x x))" 吗?
+  还记得课上曾讲过的例子 {| (\u.\v. v)((\x. x x)(\x. x x)) |} 吗?
   applicative order 会使得这一例子发散, Y 和 Z 的差别也就是在这里.
  *)
 
@@ -30,13 +30,13 @@ let z_src : string = "\\ f. (\\ x. f(\\ y. x x y)) (\\ x. f(\\ y. x x y))";;
   我们只给出辅助函数 sum_aux, 从 lab-1 中你应该知道 sum = z sum_aux. 
   现假设你已经看过 `test.ml` 中的内容, 你可以用 ` dune test `, 试一试运行 sum .
  *)
-let sum_aux : string = "\\ aux. \\ n.  if n = 0 then n else n + (aux (n-1)) end";;
+let sum_aux : string = {| \ aux. \ n.  if n = 0 then n else n + (aux (n-1)) end |};;
 (* 基于 Z 组合子的 fibonacci (2 分)
   现在请你写出递归计算 fibonacci 数列的函数, 并约定 fib 0 = fib 1 = 1.
   你仍然只需要给出辅助函数 fib_aux, 你可以使用 ` dune test ` 进行测试.
  *)
 
-let fib_aux : string = "Todo";;
+let fib_aux : string = {| Todo |};;
 
 (*
   不过, Z 组合子在 STLC 里是不可类型化的, 即 Z 组合子没有一个合适的类型.
@@ -51,7 +51,7 @@ let fib_aux : string = "Todo";;
 
   为了能够对递归函数做类型检查, 我们势必失去一些什么: 
   系统 T 选择了保证程序可终止性, 失去了编写递归函数的全能性;
-  lab-2 选择了失去程序可终止性, 保留了编写递归函数的全能性以及简明性.
+  lab-2 选择了失去程序可终止性, 保留了编写递归函数的全能性.
 
  *)
 
@@ -59,22 +59,22 @@ let fib_aux : string = "Todo";;
   下面将对 fix 拓展进行简要阐述, 阅读后你就能完成 lab-2:终 ,
   另外也可以参考教材 PFPL 第 19 章 递归函数的系统 PCF.
 
-  表面语法:
+  表面语法(surface  syntax):
     fix bind : type = body
-  抽象语法:
+  抽象语法(abstract syntax):
     |  Fix of string * type * tm 
     (* Fix(bind, type, body) *)
 
   下面以 sum 为例, 请理解 fix 的表面语法与抽象语法, 并完成习题 fib_fix.
  *)
 let sum_fix : string = 
-  " fix sum : Int->Int = \\ n : Int .
-    if n = 0 then 0 else n + (sum (n-1)) end
-  ";;
+  {|  fix sum : Int->Int = \ n : Int .
+      if n = 0 then 0 else n + (sum (n-1)) end
+  |};;
 (* 基于 fix 拓展的 fibonacci (2 分)
   请同样写出 fibonacci 函数的 fix 版本, 并约定 fib 0 = fib 1 = 1.
  *)
-let fib_fix : string = "Todo";;
+let fib_fix : string = {| Todo |};;
 
 (*
   下面是 Fix 的语义部分, 你需要根据这些规则消灭 Todo.Fixpoint (10 分)
