@@ -1,8 +1,8 @@
-open Lab2;;
-open Base;;
-open Stdio;;
+open Lab2
+open Base
+open Stdio
 
-let file_name = "test.stlc";; (* 测试指令所在的文件, 请按测试需求修改文件内容 *)
+let file_name = "test.stlc" (* 测试指令所在的文件, 请按测试需求修改文件内容 *)
 
 (* 
   lab-2 **不**要求你实现指令相关的部分, 这只是为了方便你进行测试.
@@ -92,6 +92,6 @@ let main () = begin
     ) ;
     tbl
   )
-end ;;
+end
 
-main();;
+let _ = main()

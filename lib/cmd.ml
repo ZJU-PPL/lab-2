@@ -1,5 +1,5 @@
-open Type;;
-open Base;;
+open Type
+open Base
 module OptionTyped = struct
   type tm = (* named term *)
     | Var of string
@@ -72,14 +72,14 @@ module OptionTyped = struct
 
 end
 
-type tm = OptionTyped.tm;;
+type tm = OptionTyped.tm
 type cmd = 
   | Let   of string * tm
   | Eval  of string * int
   | Check of string * ty option
-  ;;
+  
 
-type status = | Error | Termination | Suspension;;
+type status = | Error | Termination | Suspension
 let eval (tm:tm) (times:int) : tm list * status * tm =
   let tm = tm |> OptionTyped.erase |> Term.drop_name in
   let rec aux tm seq times = begin
@@ -94,12 +94,12 @@ let eval (tm:tm) (times:int) : tm list * status * tm =
   let seq = seq |> List.rev |> List.map 
   ~f:(fun tm->tm |> Term.give_name |> OptionTyped.inject)
   in (seq, status, tm)
-;;
+
 
 let check (tm:tm) : ty option = tm 
   |> OptionTyped.force
   |> Statics.check (Map.empty (module String))
-;;
+
 
 (* 存储 symbol -> term 的持久化数据结构 *)
 type tbl = (string, tm, String.comparator_witness) Map.t
@@ -135,7 +135,7 @@ let subst_tbl tbl (term:tm) =
       let map = (Map.set map ~key:bind ~data:dep) in
       Fix(bind, tyo, aux dep map body)
   end in aux 0 (Map.empty (module String)) term
-;;
+
 
 
 type response = 
@@ -183,4 +183,3 @@ let exec tbl cmd : response * tbl =
         )in (response, tbl)
       )
     )
-;;

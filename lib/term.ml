@@ -42,19 +42,19 @@ end
 (*
   1. 提供了编译器前端, 将字符串转换为抽象语法树, 例如:
   "\\ f. f (3 + 2)" 表示的是 Lam("f", App(Var("f"), Add(Int(3), Int(2))))
-  在 utop 环境里, 尝试 ` OptionTyped.erase @@ Parse.tm "\\ f. f (3 + 2)";; `
+  在 utop 环境里, 尝试 ` OptionTyped.erase @@ Parse.tm "\\ f. f (3 + 2)" `
   便可得到对应的 Named.tm (目前无需理解 OptionTyped.erase 的作用)
   你也可以尝试下列帮助函数
-  ` Parse.tm_nd "\\ f. f (3 + 2)";; ` 其中 nd 是 n AME d     的简写
-  ` Parse.tm_nl "\\ f. f (3 + 2)";; ` 其中 nl 是 n AME l ESS 的简写
+  ` Parse.tm_nd "\\ f. f (3 + 2)" ` 其中 nd 是 n AME d     的简写
+  ` Parse.tm_nl "\\ f. f (3 + 2)" ` 其中 nl 是 n AME l ESS 的简写
   
   ( 注: 编译器前端的实现, 你将会在下学期编译原理的课程上学到, 这超出本课范围. 不过无需担心,
     热心的助教为你实现了 `lexer.mll` 与 `parser.mly`, 而且你不必了解细节, 可以忽略. 
     出于简单的考量, 实验中不会出现负整数, 请你也尽量不要写负整数, 否则会导致错误 )
 *)
-let example_src_1 : string = "\\ f. f (3 + 2)";;
+let example_src_1 : string = "\\ f. f (3 + 2)"
 let example_ast_1 : Named.tm = Named.(
-  Lam("f", App(Var("f"), Add(Int(3), Int(2)))));;
+  Lam("f", App(Var("f"), Add(Int(3), Int(2)))))
 
 (*
   2. 提供了pretty printer, 将抽象语法树转换为字符串, 例如布尔非函数:
@@ -63,19 +63,19 @@ let example_ast_1 : Named.tm = Named.(
 
   在 utop 环境里, 尝试 ` 
     Stringify.tm @@ OptionTyped.inject Named.(
-      Lam("bool", If(Var("bool"), Bool(false), Bool(true))));;
+      Lam("bool", If(Var("bool"), Bool(false), Bool(true))))
   ` 便可得到对应的字符串 (同样地, 目前无需理解 OptionTyped.inject 的作用)
   你也可以尝试下列帮助函数:
   ` Stringify.tm_nd Named.(
-    Lam("bool", If(Var("bool"), Bool(false), Bool(true))));;
+    Lam("bool", If(Var("bool"), Bool(false), Bool(true))))
   ` 
   而 `Stringify.tm_nl` 是 n AME l ESS 版本的.
 
   ( 注: pretty printer 的实现位于 `syntax.ml`, 你也可以忽略此文件. )
 *)
 let example_ast_2 : Named.tm = Named.(
-  Lam("bool", If(Var("bool"), Bool(false), Bool(true))));;
-let example_src_2 : string = "\\ bool . if bool then false else true end";;
+  Lam("bool", If(Var("bool"), Bool(false), Bool(true))))
+let example_src_2 : string = "\\ bool . if bool then false else true end"
 
 (* 
   不知你注意到没有, "\\ bool. if bool then false else true end" 中使用了双斜线 "\\"
@@ -84,7 +84,7 @@ let example_src_2 : string = "\\ bool . if bool then false else true end";;
   {| \ bool. if bool then false else true end |}
   你可以在 utop 里尝试:
   `
-  Parse.tm_nd {| \ bool. if bool then false else true end |};;
+  Parse.tm_nd {| \ bool. if bool then false else true end |}
   `
  *)
  
@@ -95,13 +95,13 @@ let example_src_2 : string = "\\ bool . if bool then false else true end";;
   App(Lam("x", If( Lt(Var("x"), Int(0)), Sub(Int(0), Var("x")), Var("x")))
   , If(Bool(true), Bool(false), Bool(true)))
   *)
-let tm_ast_src : string = {| Todo |};;
+let tm_ast_src : string = {| Todo |}
 
 (* Z 组合子, 请保证绑定变量的命名一致 (2 分)
   根据下列字符串, 写出对应的抽象语法树:
   {| \ f. (\ x. f(\ y. x x y)) (\ x. f(\ y. x x y)) |}
  *)
-let tm_src_ast : Named.tm = Named.Var "Todo";;
+let tm_src_ast : Named.tm = Named.Var "Todo"
 
 (*
   至此, 你应该对 Named.tm 这一类型充分熟悉, 至于 Named 这一称呼,
@@ -201,7 +201,7 @@ let drop_name (tm : Named.tm) : Nameless.tm =
     | Named.Fix(bind, body) -> 
       raise Todo.Fixpoint
   end in aux 0 (Map.empty (module String)) tm
-;;
+
 
 exception UnknownIndex of int
 let give_name (tm : Nameless.tm) : Named.tm = 
@@ -235,7 +235,7 @@ let give_name (tm : Nameless.tm) : Named.tm =
       Named.If(reaux tm1, reaux tm2, reaux tm3)
     | Nameless.Fix(bind, body) -> raise Todo.Fixpoint
   end in aux gen 0 (Map.empty (module Int)) tm
-;;
+
 
 (*
   给仍然读到最后的耐心的读者 : 至此, 你便解锁了 let 指令.

@@ -1,10 +1,10 @@
-exception Dynamics ;;
-exception Statics  ;;
+exception Dynamics 
+exception Statics  
 (*
   请确保你阅读过 dynamics 与 statics 部分才往下阅读.
  *)
 
-exception Fixpoint;;
+exception Fixpoint
 
 (* 拓展 : fix 
   温馨提示: 像先前的内容一样, 先是简单的练习, 然后才是实现语义.
@@ -18,8 +18,8 @@ exception Fixpoint;;
   因此我们不能使用 Y 组合子, 而只能改用类似的 Z 组合子.
   你应该在 `term.ml` 的练习中接触过 Z 组合子, 现在不妨进行对比:
  *)
-let y_src : string = {| \ f. (\ x. f(      x x  )) (\ x. f(      x x  )) |};;
-let z_src : string = {| \ f. (\ x. f(\ y.  x x y)) (\ x. f(\ y.  x x y)) |};;
+let y_src : string = {| \ f. (\ x. f(      x x  )) (\ x. f(      x x  )) |}
+let z_src : string = {| \ f. (\ x. f(\ y.  x x y)) (\ x. f(\ y.  x x y)) |}
 (* 
   还记得课上曾讲过的例子 {| (\u.\v. v)((\x. x x)(\x. x x)) |} 吗?
   applicative order 会使得这一例子发散, Y 和 Z 的差别也就是在这里.
@@ -30,13 +30,13 @@ let z_src : string = {| \ f. (\ x. f(\ y.  x x y)) (\ x. f(\ y.  x x y)) |};;
   我们只给出辅助函数 sum_aux, 从 lab-1 中你应该知道 sum = z sum_aux. 
   现假设你已经看过 `test.ml` 中的内容, 你可以用 ` dune test `, 试一试运行 sum .
  *)
-let sum_aux : string = {| \ aux. \ n.  if n = 0 then n else n + (aux (n-1)) end |};;
+let sum_aux : string = {| \ aux. \ n.  if n = 0 then n else n + (aux (n-1)) end |}
 (* 基于 Z 组合子的 fibonacci (2 分)
   现在请你写出递归计算 fibonacci 数列的函数, 并约定 fib 0 = fib 1 = 1.
   你仍然只需要给出辅助函数 fib_aux, 你可以使用 ` dune test ` 进行测试.
  *)
 
-let fib_aux : string = {| Todo |};;
+let fib_aux : string = {| Todo |}
 
 (*
   不过, Z 组合子在 STLC 里是不可类型化的, 即 Z 组合子没有一个合适的类型.
@@ -70,15 +70,15 @@ let fib_aux : string = {| Todo |};;
 let sum_fix : string = 
   {|  fix sum : Int->Int = \ n : Int .
       if n = 0 then 0 else n + (sum (n-1)) end
-  |};;
+  |}
 (* 基于 fix 拓展的 fibonacci (2 分)
   请同样写出 fibonacci 函数的 fix 版本, 并约定 fib 0 = fib 1 = 1.
  *)
-let fib_fix : string = {| Todo |};;
+let fib_fix : string = {| Todo |}
 
 (*
   下面是 Fix 的语义部分, 你需要根据这些规则消灭 Todo.Fixpoint (10 分)
-  你可以通过注释掉本文件中的 ` exception Fixpoint;; `,
+  你可以通过注释掉本文件中的 ` exception Fixpoint `,
   从 dune 的构建错误信息中找到所有 Todo.Fixpoint 的位置, 
   也可以在编辑器里搜索 `Todo.Fixpoint`, 他们分别在:
   - `term.ml`

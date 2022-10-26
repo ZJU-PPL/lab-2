@@ -7,7 +7,7 @@
    Nameless 模块的 drop_name 与 give_name 这两个函数, 详见`term.ml`.
  *)
 
-open Term.Nameless;;
+open Term.Nameless
 
 [@@@warning "-27"]
 [@@@warning "-32"]
@@ -34,7 +34,7 @@ open Term.Nameless;;
 let value : tm -> bool = fun (t:tm) -> match t with
   | Lam(_) | Int(_) | Bool(_) -> true
   | _ -> false
-;;
+
 
 (* 
   在进行小步语义之前, 我们不妨来看几个简单的例子, 
@@ -52,7 +52,7 @@ let example_src_seq : string list =
   ; {|   2   + (5 + 2) |}
   ; {|   2   +    7    |}
   ; {|       9         |}
-  ];;
+  ]
 (*
   接下来, 请你模仿练习, 补充完整下列两个转换序列(各 3 分):
   关于求值过程的优先顺序, 你可以使用直觉上的那一个,
@@ -60,10 +60,10 @@ let example_src_seq : string list =
  *)
 let src_seq_1 : string list =
   [ {| if 2 + 3 < 5 then 0+1+2 else 8-2 end |}
-  ];;
+  ]
 let src_seq_2 : string list = 
   [ {| (\ f. f (5 - 3))(\ x. if x < 0 then 0 - x else x + 2 end) |}
-  ];;
+  ]
 
 (* 
   在实现小步求值语义之前, 我们还必须观察到某些表达式会出错.
@@ -203,12 +203,12 @@ let rec step (tm:tm) : (status * tm) = match tm with
 
      *)
     raise Todo.Fixpoint
-;;
+
 
 (*
   你可以在 `$ dune utop` 里试着使用 step, 例如:
   `
-  let (stat, res) = {| (\x.3) (4+5) |} |> Parse.tm_nl |> Dynamics.step ;;
+  let (stat, res) = {| (\x.3) (4+5) |} |> Parse.tm_nl |> Dynamics.step 
   `
  *)
 

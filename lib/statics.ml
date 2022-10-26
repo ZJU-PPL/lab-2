@@ -1,8 +1,8 @@
 
 (* 阅读本文件之前, 请确保你阅读过 `term.ml` `type.ml`. *)
 
-open Base;;
-open Type;;
+open Base
+open Type
 [@@@warning "-27"]
 [@@@warning "-32"]
 [@@@warning "-39"] 
@@ -11,8 +11,8 @@ open Type;;
   本文件中对 Type.Typed.tm 进行类型检查, 方便起见, 简记 Term = Type.Typed
   不 Open Term 是因为构造器会重名, 如 Term.Int 与 Type.Int
  *)
-module Term = Typed;; 
-type tm = Term.tm;; 
+module Term = Typed 
+type tm = Term.tm 
 
 (*
   类似我们在动态语义那里做过的, 我们先来做一点小练习.
@@ -29,12 +29,12 @@ let example_ty_result_2 : ty option = Some(Int) (* 1 和 0 是 Int, 从而整个
 
 (* 参考例子, 请你判断下列三项有无正确的类型(各 2 分): *)
 
-let tm_check_1 : string = "if 2 + 1 = 3 then (\\ x:Bool.3) (2<3) else 9-1 end";;
-let ty_result_1 : ty option = Some(Bool);; (* Todo *)
-let tm_check_2 : string = "(\\ x : Int. x + 4)(true - false)";;
-let ty_result_2 : ty option = Some(Bool);; (* Todo *)
-let tm_check_3 : string = "\\ b : Bool. if b then 2 else 1 + b end";;
-let ty_result_3 : ty option = Some(Bool);; (* Todo *)
+let tm_check_1 : string = "if 2 + 1 = 3 then (\\ x:Bool.3) (2<3) else 9-1 end"
+let ty_result_1 : ty option = Some(Bool) (* Todo *)
+let tm_check_2 : string = "(\\ x : Int. x + 4)(true - false)"
+let ty_result_2 : ty option = Some(Bool) (* Todo *)
+let tm_check_3 : string = "\\ b : Bool. if b then 2 else 1 + b end"
+let ty_result_3 : ty option = Some(Bool) (* Todo *)
 
 
 (*
@@ -154,7 +154,7 @@ let rec check (ctx:ctx) (tm:tm) : ty option =
      *)
     raise Todo.Fixpoint
   )
-  ;;
+  
 (*
   接下来的任务, 请前往 `todo.ml` 领取.
   另外, 至此你完成了 lab-2 的基础部分, 解锁了 check 指令.

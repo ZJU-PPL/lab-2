@@ -1,7 +1,7 @@
 %{
-open Cmd;;
-module Type = Type;;
-module Term = OptionTyped;;
+open Cmd
+module Type = Type
+module Term = OptionTyped
 %}
 
 /* TK means Token */
