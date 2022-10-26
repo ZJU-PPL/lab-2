@@ -5,7 +5,7 @@ Note : Currently, only simplified Chinese version(of course, with some academic 
 请在实验前阅读本文件, 以免错过重要信息.
 在本实验中, 你将使用 OCaml 实现一个 Simply Type Lambda Calculus, STLC 以及递归函数拓展 `fix`. 
 原则上, 代码文件中的注释足以帮助你完成实验, 如有问题, 请联系我们.
-也可以参考教材 PFPL 的第 4~8 章与第 19 章.
+亦可参考[补充材料](https://github.com/ZJU-PPL/supplements)与教材 PFPL 的第 4~8 章与第 19 章.
 
 ## 项目结构
 `lib/` 下的文件:
@@ -21,7 +21,7 @@ Note : Currently, only simplified Chinese version(of course, with some academic 
     可用于自我测试, 请阅读 `test.ml` 内的注释, 按需修改`test.stlc`, 并运行 `$ dune test`.
 - `fresh.ml` `lexer.mll` `parser.mly` `syntax.ml` `cmd.ml` 
     这是助教为你提供的帮助函数库, 你**不需要**关心这一部分的代码实现.
-    若有需要, 你只阅读函数名, 并借助 `$ dune utop` 来查看对应函数的类型.
+    若有需要, 你只需阅读函数名, 并借助 `$ dune utop` 来查看对应函数的类型.
 
 ## 实验组成
 实验分为三部分, 未完成前一部分, 亦可进行后一部分, 评测系统将分别测试:
